@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <title>王座金商</title>
+    <title>geo-slim-php</title>
 
     <link rel="stylesheet" href="/css/reset.css">
     <link rel="stylesheet" href="/css/bootstrap.css">

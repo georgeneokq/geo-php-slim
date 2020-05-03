@@ -13,10 +13,10 @@
 
 use Slim\Routing\RouteCollectorProxy;
 
-// Controller namespace shorthand for convenience
+// Controller namespace shorthand 'C' for convenience
 
 $app->group('/api', function(RouteCollectorProxy $group) {
-    //  version 1 api routes
+    // Version 1 api routes
     $group->group('/v1', function(RouteCollectorProxy $group) {
 
         $group->get('/products', C.'ProductsController:getAllProducts');
@@ -27,8 +27,7 @@ $app->group('/api', function(RouteCollectorProxy $group) {
 
         // Requires token authentication
         $group->group('', function(RouteCollectorProxy $group) {
-            $group->post('/orders', C.'OrdersController:createOrder');
-            $group->get('/{user_id}/orders', C.'OrdersController:getOrdersByUserId');
+
         })->add(AuthToken::class);
     });
 });
