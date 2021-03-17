@@ -24,12 +24,13 @@ const Http2 = {
         let response = await fetch(url);
         return await response.json();
     },
-    post: async function(url, data) {
+    post: async function(url, data, headers={}) {
         let response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
-                'content-type': 'application/json'
+                'content-type': 'application/json',
+                ...headers
             }
         });
         return await response.json();

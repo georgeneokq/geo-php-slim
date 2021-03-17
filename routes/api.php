@@ -13,7 +13,10 @@
 
 use Slim\Routing\RouteCollectorProxy;
 
-// Controller namespace shorthand 'C' for convenience
+/* 
+ * Controller namespace shorthand 'C' for convenience
+ * C.'MyController:home' in full is 'App\Controllers\MyController:home'
+ */
 
 $app->group('/api', function(RouteCollectorProxy $group) {
     // Version 1 api routes
