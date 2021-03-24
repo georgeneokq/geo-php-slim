@@ -21,6 +21,7 @@ class UsersController extends Controller
         $user->email = $email;
         $user->name = $name;
         $user->password = password_hash($password, PASSWORD_BCRYPT);
+        
         if($user->save()) {
             $response->getBody()->write($this->encode([
                 'err' => 0
