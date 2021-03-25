@@ -16,13 +16,15 @@ class AuthToken extends Middleware
      */
     public function __invoke(Request $request, RequestHandler $handler): Response
     {   
-        // Check for token
+        // Check for token in both header and body (header is preferred, but allow for flexibility)
         $body = $request->getParsedBody();
-        $token = $this->get($body, '_token');
+        $token = $request->hasHeader('_token') ? $request->getHeader('_token')[0] : $this->get($body, '_token');
+        $token = stripslashes($token); // Retrieving token from header requires stripping of unexpected backslashes.
         if($token) {
             // Check for user with token
             $user_session = UserSession::where('token', $token)->first();
             if($user_session) {
+                $request = $request->withAttribute('_token', $token);
                 return $handler->handle($request);
             }
         }
