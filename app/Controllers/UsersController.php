@@ -4,22 +4,24 @@ namespace App\Controllers;
 use App\Models\User;
 use Illuminate\Database\Capsule\Manager as DB;
 
-use Psr\Http\Message\ResponseInterface as Response;
+use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class UsersController extends Controller
 {
     public function signup(Request $request, Response $response) {
         $body = $request->getParsedBody();
-        // Get email, name, password
-        $email = $body['email'];
-        $name = $body['name'];
-        $password = $body['password'];
+        $email = $this->get($body, 'email');
+        $password = $this->get($body, 'password');
+        $first_name = $this->get($body, 'first_name');
+        $last_name = $this->get($body, 'last_name');
 
         // Create user model and save to database
         $user = new User();
         $user->email = $email;
         $user->name = $name;
+        $user->first_name = $first_name;
+        $user->last_name = $last_name;
         $user->password = password_hash($password, PASSWORD_BCRYPT);
         
         if($user->save()) {

@@ -3,7 +3,7 @@ namespace App\Controllers;
 
 use Illuminate\Database\Capsule\Manager as DB;
 
-use Psr\Http\Message\ResponseInterface as Response;
+use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class WebController extends Controller
