@@ -12,9 +12,9 @@ Composer is required to install dependencies. Run `composer install` to install 
 Run `php -S localhost:8000` in the root folder to start a local development server.
 
 ## Deployment for shared hosting
-1. Transfer the public files (/css, /js, index.php) into shared hosting's public folder.
-2. Transfer the rest of the files into a separate folder that is placed in the shared hosting's root folder.
-3. Edit the constant SERVER_ROOT_PATH in **bootstrap/app.php** according to where you placed the non-public files.
+1. Transfer files in the `public` folder into shared hosting's public folder.
+2. Transfer the rest of the files into a different folder that is not accessible to the public.
+3. Edit the constant SERVER_ROOT_PATH in **bootstrap/app.php** according to where you placed the non-public server files.
 
 ## DEVELOPMENT TIPS
 This framework is very similar to Laravel - it is an MVC framework that uses 
@@ -29,9 +29,9 @@ Both the base classes `Controller` and `Middleware` include the `encode` method,
 
 Routes should be neatly separated into `routes/api.php` file and `routes/web.php` file depending on what kind of route you are declaring.
 
-For routes, the `group()` method groups all the routes declared within its callback function with a prefix. For example, when declaring a route `login` under `$app->group('v1', ...)`, the full route becomes `/v1/login`.
+For routes, the `group()` method groups all the routes declared within its callback function with a prefix. For example, when declaring a route `login` under `$app->group('api', ...)`, the full route becomes `/api/login`.
 
-Middleware can be attached to routes by calling the `add` method on groups, like so: `$app->group(...)->add(AuthToken::class)`.
+Middleware can be attached to routes by calling the `add` method on groups, for example: `$group->group(...)->add(new AuthToken())`, where AuthToken is a class that extends the base Middleware class.
 
 When rendering views, it is possible to pass variables into the view by calling `$this->view->render($response, $view_path, $variables)` (see the WebController class that has been included by default).
 

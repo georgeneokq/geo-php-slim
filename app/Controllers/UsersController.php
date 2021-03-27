@@ -2,47 +2,55 @@
 namespace App\Controllers;
 
 use App\Models\User;
-use Illuminate\Database\Capsule\Manager as DB;
+use App\Models\UserSession;
 
+use Illuminate\Database\Capsule\Manager as DB;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class UsersController extends Controller
 {
+    public function getAllUsers(Request $request, Response $response) {
+        $users = User::all();
+        $response->getBody()->write($this->encode($users));
+        return $response;
+    }
+
     public function signup(Request $request, Response $response) {
         $body = $request->getParsedBody();
         $email = $this->get($body, 'email');
         $password = $this->get($body, 'password');
         $first_name = $this->get($body, 'first_name');
         $last_name = $this->get($body, 'last_name');
+        $biography = $this->get($body, 'biography');
 
         // Create user model and save to database
         $user = new User();
         $user->email = $email;
-        $user->name = $name;
+        $user->password = password_hash($password, PASSWORD_BCRYPT);
         $user->first_name = $first_name;
         $user->last_name = $last_name;
-        $user->password = password_hash($password, PASSWORD_BCRYPT);
-        
+        $user->biography = $biography;
         if($user->save()) {
             $response->getBody()->write($this->encode([
                 'err' => 0
             ]));
-            return $response;
         } else {
             $response->getBody()->write($this->encode([
                 'err' => 1,
                 'msg' => 'An error has occurred.'
             ]));
-            return $response;
         }
+        return $response;
     }
 
     public function login(Request $request, Response $response) {
         $body = $request->getParsedBody();
         // Get email and password
-        $email = $body['email'];
-        $password = $body['password'];
+        $email = $this->get($body, 'email');
+        $password = $this->get($body, 'password');
+
+        /* TODO: DO FIELD VALIDATION! */
 
         // Get model by email
         $user = User::where('email', $email)->first();
@@ -50,50 +58,36 @@ class UsersController extends Controller
         if($user) {
             // Check hash
             if(password_verify($password, $user->password)) {
-                // Return token as well as account info (except password)
-                $token = password_hash($user->password, PASSWORD_BCRYPT);
-                $user->token = $token;
-                $user->save();
+                $token = $user->renewToken();
+                
                 $response->getBody()->write($this->encode([
                     'err' => 0,
-                    'token' => $token,
-                    'user' => [
-                        'id' => $user->id,
-                        'email' => $user->email,
-                        'name' => $user->name
-                    ]
+                    '_token' => $token
                 ]));
-            } else {
-                $response->getBody()->write($this->encode([
-                    'err' => 1,
-                    'msg' => 'Wrong password'
-                ]));
+                return $response;
             }
-        } else {
-            $response->getBody()->write($this->encode([
-                'err' => 1,
-                'msg' => 'No such account'
-            ]));
         }
+        /* Validation failed. Don't give too much information about the invalid attempt, in case of hacking attempt */
+        $response->getBody()->write($this->encode([
+            'err' => 1,
+            'msg' => 'Invalid credentials'
+        ]));
         return $response;
     }
 
     public function logout(Request $request, Response $response) {
         $body = $request->getParsedBody();
-        // Get the token
-        $token = $body['token'];
-        $user = User::where(DB::raw('BINARY `token`'), $token)->first();
+        $token = $request->getAttribute('_token');
+        $user_session = UserSession::where('token', $token)->first();
 
-        if($user) {
-            $user->token = null;
-            $user->save();
+        if($user_session->delete()) {
             $response->getBody()->write($this->encode([
                 'err' => 0
             ]));
         } else {
             $response->getBody()->write($this->encode([
                 'err' => 1,
-                'msg' => 'Invalid token'
+                'msg' => 'Unable to logout of this account'
             ]));
         }
 

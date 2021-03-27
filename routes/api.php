@@ -11,6 +11,8 @@
  * 4. Return the response object
  */
 
+use App\Middleware\AuthToken;
+
 use Slim\Routing\RouteCollectorProxy;
 
 /* 
@@ -19,18 +21,13 @@ use Slim\Routing\RouteCollectorProxy;
  */
 
 $app->group('/api', function(RouteCollectorProxy $group) {
-    // Version 1 api routes
-    $group->group('/v1', function(RouteCollectorProxy $group) {
 
-        $group->get('/products', C.'ProductsController:getAllProducts');
+    $group->post('/users/signup', C.'UsersController:signup');
+    $group->post('/users/login', C.'UsersController:login');
+    $group->post('/users/logout', C.'UsersController:logout');
 
-        $group->post('/users/signup', C.'UsersController:signup');
-        $group->post('/users/login', C.'UsersController:login');
-        $group->post('/users/logout', C.'UsersController:logout');
-
-        // Requires token authentication
-        $group->group('', function(RouteCollectorProxy $group) {
-
-        })->add(AuthToken::class);
-    });
+    $group->group('', function(RouteCollectorProxy $group) {
+        // Routes that require token authentication go here
+        
+    })->add(new AuthToken());
 });
