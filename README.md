@@ -16,6 +16,23 @@ Run `php -S localhost:8000` in the root folder to start a local development serv
 2. Transfer the rest of the files into a different folder that is not accessible to the public.
 3. Edit the constant SERVER_ROOT_PATH in **bootstrap/app.php** according to where you placed the non-public server files.
 
+## Deployment on Linux apache2 server
+Run the following commands to enable URL rewriting:
+
+`sudo a2enmod rewrite` to enable mod_rewrite module
+
+`sudo service apache2 restart` to apply changes
+
+Add the following code into `/etc/apache2/apache2.conf` file (Assuming your public files are hosted in `/var/www/html` directory):
+
+```
+<Directory "/var/www/html">
+        AllowOverride All
+        Order allow,deny
+        Allow from all
+</Directory>
+```
+
 ## DEVELOPMENT TIPS
 This framework is very similar to Laravel - it is an MVC framework that uses 
 
