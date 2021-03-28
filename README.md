@@ -33,6 +33,18 @@ Add the following code into `/etc/apache2/apache2.conf` file (Assuming your publ
 </Directory>
 ```
 
+Uploading files may result in a very large payload. It is recommended to increase the `upload_max_filesize` and `post_max_size` values in `php.ini` file.
+
+```
+; Maximum allowed size for uploaded files.
+upload_max_filesize = 100M
+
+; Must be greater than or equal to upload_max_filesize
+post_max_size = 105M
+```
+
+When moving uploaded files in Linux, retrieve files from `$_FILES` superglobal and use `move_uploaded_file()` function to do move the files. Even though the `uploadedFile` objects returned by `$request->getUploadedFiles()` provide a convenient`moveTo()` method, it doesn't work in Linux (after spending a whole day tinkering around with user groups and permissions, this method still didn't work).
+
 ## DEVELOPMENT TIPS
 This framework is very similar to Laravel - it is an MVC framework that uses 
 
